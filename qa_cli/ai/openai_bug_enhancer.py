@@ -74,5 +74,5 @@ Bug draft:
         print(f"[AI] Enhanced bug report saved to: {new_path}")
 
     except Exception as e:
+   
         print(f"[AI] Enhancement failed: {e}")
-        # НИКОГДА не валим тест из-за AI

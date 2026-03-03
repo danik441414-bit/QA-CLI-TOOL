@@ -37,14 +37,14 @@ def get_password_cases(mode: str, seed: int, target_count_full: int = 100):
         {"name": "sql-ish", "password": "' OR 1=1"},
         {"name": "html-ish", "password": "<script>alert(1)</script>"},
         {"name": "cyrillic", "password": "парольтестовый"},
-        # emoji остаётся — но мы будем SKIP на уровне сценария, чтобы не ломать прогон
+        
         {"name": "emoji", "password": "pass🙂🙂🙂"},
     ]
 
     if mode == "smoke":
         return base[:10]
 
-    # full: добиваем рандомами
+
     out = list(base)
     i = 1
     while len(out) < target_count_full:

@@ -16,7 +16,7 @@ class ScenarioRegistry:
         self._items: Dict[str, Tuple[ScenarioMeta, Callable]] = {}
 
     def register(self, meta: ScenarioMeta, fn: Callable) -> None:
-        # Если случайно зарегистрировали дважды — перезатрём (лучше, чем падать)
+        
         self._items[meta.id] = (meta, fn)
 
     def get(self, scenario_id: str) -> Tuple[ScenarioMeta, Callable]:

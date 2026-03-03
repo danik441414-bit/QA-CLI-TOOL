@@ -40,7 +40,7 @@ def run(cfg: RunConfig) -> int:
     status = "PASSED" if code == 0 else "FAILED"
     print(f"[RUNNER] Finished with status: {status}")
 
-    # --- AI enhancement ---
+    #  AI enhancement 
     try:
         bug_files = list(artifacts_dir.glob("bug_*.md"))
         for bug_file in bug_files:

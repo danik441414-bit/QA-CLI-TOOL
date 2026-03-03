@@ -79,8 +79,7 @@ def get_register_negative_cases(mode: str, seed: int) -> List[RegisterCase]:
         ]
     )
 
-    # “exists” лучше включать только если у тебя есть реально существующий email на AE
-    # Пока оставляем soft, чтобы не флапало.
+    
     full.append(RegisterCase("existing_email_full_soft", "User", "test@example.com", "unsupported_ok"))
 
     return smoke + full

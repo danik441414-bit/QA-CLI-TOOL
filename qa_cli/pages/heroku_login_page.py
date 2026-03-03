@@ -32,7 +32,7 @@ class HerokuLoginPage:
         self.wait.until(EC.presence_of_element_located(self.PASSWORD))
         self.wait.until(EC.element_to_be_clickable(self.BTN_LOGIN))
 
-    # ✅ ЕДИНАЯ сигнатура для Heroku:
+    
     def login(self, username: str, password: str) -> None:
         username = (username or "").strip()
         password = password or ""

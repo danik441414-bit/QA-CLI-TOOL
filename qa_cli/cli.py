@@ -22,11 +22,10 @@ def normalize_base_url(url: str) -> str:
         return url
 
     if "://" not in url:
-        # если вдруг ввели без схемы
+        
         url = "https://" + url
 
-    # ручная обрезка пути без лишних зависимостей
-    # scheme://host/....
+    
     parts = url.split("://", 1)
     scheme = parts[0]
     rest = parts[1]

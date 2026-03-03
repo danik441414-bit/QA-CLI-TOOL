@@ -26,18 +26,18 @@ class RegisterPage:
 
     PATH = "/login"
 
-    # New User Signup!
+    
     NAME = (By.CSS_SELECTOR, 'input[data-qa="signup-name"]')
     EMAIL = (By.CSS_SELECTOR, 'input[data-qa="signup-email"]')
     BTN_SIGNUP = (By.CSS_SELECTOR, 'button[data-qa="signup-button"]')
 
-    # Текст под формой signup: "Email Address already exist!"
+    
     SIGNUP_ERROR = (By.CSS_SELECTOR, "form[action='/signup'] p")
 
-    # Маркеры следующей страницы (Account Information)
+    
     ACCOUNT_INFO_HEADING = (By.XPATH, "//*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'enter account information')]")
-    ACCOUNT_INFO_FORM = (By.CSS_SELECTOR, 'form[action="/signup"]')  # на AE иногда форма остаётся, поэтому не единственный маркер
-    ACCOUNT_INFO_PASSWORD = (By.CSS_SELECTOR, 'input[data-qa="password"]')  # на странице account info это поле есть
+    ACCOUNT_INFO_FORM = (By.CSS_SELECTOR, 'form[action="/signup"]')  
+    ACCOUNT_INFO_PASSWORD = (By.CSS_SELECTOR, 'input[data-qa="password"]')  
 
     def __init__(self, driver: WebDriver, base_url: str, timeout: int = 10):
         self.driver = driver
@@ -47,7 +47,7 @@ class RegisterPage:
     def open(self) -> None:
         self.driver.get(self.base_url + self.PATH)
 
-        # ждём, что реально появилась форма signup
+        
         self.wait.until(EC.presence_of_element_located(self.NAME))
         self.wait.until(EC.presence_of_element_located(self.EMAIL))
         self.wait.until(EC.element_to_be_clickable(self.BTN_SIGNUP))
@@ -77,7 +77,7 @@ class RegisterPage:
         Иногда текст может быть в разном регистре/месте.
         """
         try:
-            # Самый надёжный маркер на AE — поле password (Account Info page)
+            
             self.driver.find_element(*self.ACCOUNT_INFO_PASSWORD)
             return True
         except Exception:
@@ -90,7 +90,7 @@ class RegisterPage:
             return False
 
     def submit_signup(self, name: str, email: str) -> SignupOutcome:
-        # На всякий случай: если пользователь оставил пробелы
+        
         name = (name or "").strip()
         email = (email or "").strip()
 
@@ -108,7 +108,7 @@ class RegisterPage:
         self.wait.until(EC.element_to_be_clickable(self.BTN_SIGNUP))
         self.driver.find_element(*self.BTN_SIGNUP).click()
 
-        # ждём: либо url сменился, либо появилась ошибка, либо HTML5 validation message
+        
         try:
             self.wait.until(
                 lambda d: d.current_url != before_url
@@ -117,7 +117,7 @@ class RegisterPage:
                 or self._is_account_info()
             )
         except TimeoutException:
-            # не падаем — outcome всё равно снимем
+            
             pass
 
         navigated = self.driver.current_url != before_url
@@ -125,7 +125,7 @@ class RegisterPage:
         error_text = self._signup_error()
         landed_on_account_info = self._is_account_info()
 
-        # HTML5 block = не было навигации и есть validation message
+        
         html5_block = (not navigated) and bool(validation_message)
 
         return SignupOutcome(

@@ -19,10 +19,10 @@ class LoginPage:
     PASSWORD = (By.CSS_SELECTOR, 'input[data-qa="login-password"]')
     BTN_LOGIN = (By.CSS_SELECTOR, 'button[data-qa="login-button"]')
 
-    # Ошибка при неправильном логине: "Your email or password is incorrect!"
+    
     ERROR = (By.CSS_SELECTOR, 'form[action="/login"] p')
 
-    # Признаки успешного логина (делаем несколько, чтобы было устойчиво)
+    
     LOGGED_IN_AS = (
         By.XPATH,
         "//*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'logged in as')]",
@@ -64,7 +64,7 @@ class LoginPage:
             return None
 
     def _logged_in_marker_present(self) -> bool:
-        # Быстрая проверка без ожиданий
+        
         try:
             self.driver.find_element(*self.LOGOUT_LINK)
             return True

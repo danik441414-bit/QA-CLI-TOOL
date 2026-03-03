@@ -213,12 +213,12 @@ def login_positive(ctx):
         assert page.is_logout_visible(), "Logout button not visible after login (Heroku)"
         return None
 
-    # AutomationExercise fixed creds required
+    
     assert profile.email and profile.password, "Missing fixed creds in qa_cli/sites/profiles.py (AUTOMATION_EXERCISE)"
 
     page.login(email=profile.email, password=profile.password)
 
-    # ✅ главное: ждём, что хедер/кнопка logout реально появятся
+    
     ok = page.is_logged_in(timeout=8)
     if not ok:
         ss, html = _save_debug(driver, artifacts_dir, None)

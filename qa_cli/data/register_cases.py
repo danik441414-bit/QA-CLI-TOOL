@@ -51,8 +51,7 @@ def get_register_negative_cases(mode: str, seed: int) -> List[RegisterCase]:
     if mode == "smoke":
         return smoke
 
-    # FULL: нагенерим много вариантов (часть будет html5_block, часть может быть "unsupported_ok")
-    # unsupported_ok = сайт/браузер может не блокировать html5 одинаково, это НЕ должно валить прогон
+    
     generated: List[RegisterCase] = []
 
     # 30 раз "exists" (должно стабильно давать already exist)

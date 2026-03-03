@@ -6,5 +6,5 @@ class UnsupportedInputError(ValueError):
 
 
 def contains_non_bmp(s: str) -> bool:
-    # BMP is U+0000..U+FFFF. Emoji often > U+FFFF.
+    
     return any(ord(ch) > 0xFFFF for ch in s)

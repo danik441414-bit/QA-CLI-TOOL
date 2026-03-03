@@ -1,4 +1,4 @@
-# qa_cli/sites/profiles.py
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 class SiteProfile:
     name: str
     default_base_url: str
-    # creds for positive flows (optional)
+    
     email: str | None = None
     password: str | None = None
 
@@ -17,7 +17,7 @@ class SiteProfile:
 AUTOMATION_EXERCISE = SiteProfile(
     name="automation_exercise",
     default_base_url="https://automationexercise.com",
-    # TODO: ВПИШИ СВОЙ ФИКСИРОВАННЫЙ АККАУНТ:
+    
     email="test2026@test.com",
     password="test2026",
 )
