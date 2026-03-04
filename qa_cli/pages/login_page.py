@@ -1,16 +1,13 @@
 from __future__ import annotations
 
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+
+from qa_cli.pages.base_page import BasePage
 
 
-class LoginPage:
+class LoginPage(BasePage):
     """
-    AutomationExercise login page:
-    /login -> блок "Login to your account" (email + password + Login button)
+    AutomationExercise login page: /login
     """
 
     PATH = "/login"
@@ -20,70 +17,55 @@ class LoginPage:
     BTN_LOGIN = (By.CSS_SELECTOR, 'button[data-qa="login-button"]')
 
     
-    ERROR = (By.CSS_SELECTOR, 'form[action="/login"] p')
+    ERROR = (By.XPATH, "//*[@class='login-form']//p")
 
     
-    LOGGED_IN_AS = (
-        By.XPATH,
-        "//*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'logged in as')]",
-    )
+    LOGGED_IN_EMAIL = (By.XPATH, "//*[contains(@class,'fa-user')]/following-sibling::b")
+
     LOGOUT_LINK = (By.CSS_SELECTOR, 'a[href="/logout"]')
 
-    def __init__(self, driver: WebDriver, base_url: str, timeout: int = 10):
-        self.driver = driver
-        self.base_url = base_url.rstrip("/")
-        self.wait = WebDriverWait(driver, timeout)
-
     def open(self) -> None:
-        self.driver.get(self.base_url + self.PATH)
-        self.wait.until(EC.presence_of_element_located(self.EMAIL))
-        self.wait.until(EC.presence_of_element_located(self.PASSWORD))
-        self.wait.until(EC.element_to_be_clickable(self.BTN_LOGIN))
+        self.open_url(self.PATH)
+        self.waits.visible(self.EMAIL)
+        self.waits.visible(self.PASSWORD)
+        self.waits.clickable(self.BTN_LOGIN)
 
     def login(self, email: str, password: str) -> None:
         email = (email or "").strip()
         password = password or ""
 
-        email_el = self.driver.find_element(*self.EMAIL)
-        pwd_el = self.driver.find_element(*self.PASSWORD)
+        self.waits.visible(self.EMAIL).clear()
+        self.driver.find_element(*self.EMAIL).send_keys(email)
 
-        email_el.clear()
-        email_el.send_keys(email)
+        self.waits.visible(self.PASSWORD).clear()
+        self.driver.find_element(*self.PASSWORD).send_keys(password)
 
-        pwd_el.clear()
-        pwd_el.send_keys(password)
+        self.waits.clickable(self.BTN_LOGIN).click()
 
-        self.driver.find_element(*self.BTN_LOGIN).click()
-
-    def get_error_text(self) -> str | None:
+    def get_error_text(self) -> str:
         try:
             el = self.driver.find_element(*self.ERROR)
-            text = (el.text or "").strip()
-            return text if text else None
+            return (el.text or "").strip()
         except Exception:
-            return None
+            return ""
 
-    def _logged_in_marker_present(self) -> bool:
-        
+    def is_logged_in(self, timeout: int = 8) -> bool:
         try:
-            self.driver.find_element(*self.LOGOUT_LINK)
-            return True
-        except Exception:
-            pass
-
-        try:
-            self.driver.find_element(*self.LOGGED_IN_AS)
+            self.waits.visible(self.LOGGED_IN_EMAIL, timeout=timeout)
             return True
         except Exception:
             return False
 
-    def is_logged_in(self, timeout: int = 5) -> bool:
-        """
-        Устойчиво: ждём чуть-чуть, пока хедер обновится после логина.
-        Считаем успехом: появился Logout или "Logged in as".
-        """
+    def is_logout_visible(self, timeout: int = 8) -> bool:
         try:
-            WebDriverWait(self.driver, timeout).until(lambda d: self._logged_in_marker_present())
+            self.waits.visible(self.LOGOUT_LINK, timeout=timeout)
             return True
-        except TimeoutException:
+        except Exception:
+            return False
+
+    def is_on_login(self) -> bool:
+        
+        try:
+            return "/login" in (self.driver.current_url or "")
+        except Exception:
             return False

@@ -2,11 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
+
+from qa_cli.pages.base_page import BasePage
 
 
 @dataclass(frozen=True)
@@ -18,15 +16,11 @@ class SignupOutcome:
     landed_on_account_info: bool
 
 
-class RegisterPage:
-    """
-    AutomationExercise регистрация:
-    /login -> блок "New User Signup!" (name + email + Signup button)
-    """
+class RegisterPage(BasePage):
+    
 
     PATH = "/login"
 
-    
     NAME = (By.CSS_SELECTOR, 'input[data-qa="signup-name"]')
     EMAIL = (By.CSS_SELECTOR, 'input[data-qa="signup-email"]')
     BTN_SIGNUP = (By.CSS_SELECTOR, 'button[data-qa="signup-button"]')
@@ -35,28 +29,15 @@ class RegisterPage:
     SIGNUP_ERROR = (By.CSS_SELECTOR, "form[action='/signup'] p")
 
     
-    ACCOUNT_INFO_HEADING = (By.XPATH, "//*[contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'enter account information')]")
-    ACCOUNT_INFO_FORM = (By.CSS_SELECTOR, 'form[action="/signup"]')  
-    ACCOUNT_INFO_PASSWORD = (By.CSS_SELECTOR, 'input[data-qa="password"]')  
-
-    def __init__(self, driver: WebDriver, base_url: str, timeout: int = 10):
-        self.driver = driver
-        self.base_url = base_url.rstrip("/")
-        self.wait = WebDriverWait(driver, timeout)
+    ACCOUNT_INFO = (By.XPATH, "//*[@class='login-form']//*[text()='Enter Account Information']")
 
     def open(self) -> None:
-        self.driver.get(self.base_url + self.PATH)
-
-        
-        self.wait.until(EC.presence_of_element_located(self.NAME))
-        self.wait.until(EC.presence_of_element_located(self.EMAIL))
-        self.wait.until(EC.element_to_be_clickable(self.BTN_SIGNUP))
+        self.open_url(self.PATH)
+        self.waits.visible(self.NAME)
+        self.waits.visible(self.EMAIL)
+        self.waits.clickable(self.BTN_SIGNUP)
 
     def _validation_message(self) -> str:
-        """
-        HTML5 validationMessage на email input.
-        Если форма не сабмитится из-за HTML5 валидации, тут будет текст.
-        """
         try:
             el = self.driver.find_element(*self.EMAIL)
             msg = self.driver.execute_script("return arguments[0].validationMessage;", el)
@@ -72,52 +53,26 @@ class RegisterPage:
             return ""
 
     def _is_account_info(self) -> bool:
-        """
-        Надёжная проверка, что мы попали на "ENTER ACCOUNT INFORMATION".
-        Иногда текст может быть в разном регистре/месте.
-        """
         try:
-            
-            self.driver.find_element(*self.ACCOUNT_INFO_PASSWORD)
-            return True
-        except Exception:
-            pass
-
-        try:
-            self.driver.find_element(*self.ACCOUNT_INFO_HEADING)
+            self.driver.find_element(*self.ACCOUNT_INFO)
             return True
         except Exception:
             return False
 
     def submit_signup(self, name: str, email: str) -> SignupOutcome:
-        
-        name = (name or "").strip()
-        email = (email or "").strip()
+        self.waits.visible(self.NAME).clear()
+        self.driver.find_element(*self.NAME).send_keys(name)
 
-        name_el = self.driver.find_element(*self.NAME)
-        email_el = self.driver.find_element(*self.EMAIL)
-
-        name_el.clear()
-        name_el.send_keys(name)
-
-        email_el.clear()
-        email_el.send_keys(email)
+        self.waits.visible(self.EMAIL).clear()
+        self.driver.find_element(*self.EMAIL).send_keys(email)
 
         before_url = self.driver.current_url
-
-        self.wait.until(EC.element_to_be_clickable(self.BTN_SIGNUP))
-        self.driver.find_element(*self.BTN_SIGNUP).click()
+        self.waits.clickable(self.BTN_SIGNUP).click()
 
         
         try:
-            self.wait.until(
-                lambda d: d.current_url != before_url
-                or bool(self._signup_error())
-                or bool(self._validation_message())
-                or self._is_account_info()
-            )
-        except TimeoutException:
-            
+            self.waits._w().until(lambda d: d.current_url != before_url or self._signup_error() or self._validation_message())
+        except Exception:
             pass
 
         navigated = self.driver.current_url != before_url
@@ -125,7 +80,6 @@ class RegisterPage:
         error_text = self._signup_error()
         landed_on_account_info = self._is_account_info()
 
-        
         html5_block = (not navigated) and bool(validation_message)
 
         return SignupOutcome(
