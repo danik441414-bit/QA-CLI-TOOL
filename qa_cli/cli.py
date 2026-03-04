@@ -9,14 +9,7 @@ from qa_cli.sites.profiles import DEFAULT_SITE
 
 
 def normalize_base_url(url: str) -> str:
-    """
-    Нормализация base_url:
-    - если ввели полный URL с путём (например .../login), оставляем только scheme+host
-    - убираем trailing slash
-    Примеры:
-      https://the-internet.herokuapp.com/login -> https://the-internet.herokuapp.com
-      https://automationexercise.com/          -> https://automationexercise.com
-    """
+    
     url = url.strip()
     if not url:
         return url

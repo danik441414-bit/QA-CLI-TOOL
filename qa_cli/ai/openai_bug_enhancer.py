@@ -10,13 +10,7 @@ except ImportError:
 
 
 def enhance_bug_report(bug_path: Path) -> None:
-    """
-    Улучшает bug draft через OpenAI.
-    Безопасно:
-    - если нет openai библиотеки -> skip
-    - если нет API key -> skip
-    - если ошибка -> не валим прогон
-    """
+    
 
     if not bug_path.exists():
         print(f"[AI] Bug file not found: {bug_path}")

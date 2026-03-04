@@ -11,7 +11,7 @@ class RegisterCase:
     case_name: str
     name: str
     email: str
-    expect: str  # "exists" | "html5_block" | "unsupported_ok"
+    expect: str  
 
 
 def _rand_local(rng: random.Random, n: int) -> str:
@@ -25,15 +25,12 @@ def _rand_domain(rng: random.Random) -> str:
 
 
 def get_register_negative_cases(mode: str, seed: int) -> List[RegisterCase]:
-    """
-    smoke: 7-10 кейсов
-    full: 120+ кейсов (детерминировано от seed)
-    """
+   
     mode = (mode or "smoke").strip().lower()
     rng = random.Random(seed)
 
     valid_name = "UserTest"
-    exists_email = "someone@example.com"  # специально существующий на AE (как у тебя в логах)
+    exists_email = "someone@example.com"  
 
     smoke = [
         RegisterCase("exists_1", valid_name, exists_email, "exists"),
@@ -54,11 +51,11 @@ def get_register_negative_cases(mode: str, seed: int) -> List[RegisterCase]:
     
     generated: List[RegisterCase] = []
 
-    # 30 раз "exists" (должно стабильно давать already exist)
+    
     for i in range(2, 32):
         generated.append(RegisterCase(f"exists_{i}", valid_name, exists_email, "exists"))
 
-    # 90 рандомных "битых" емейлов
+    
     for i in range(1, 91):
         local = _rand_local(rng, rng.randint(1, 12))
         dom = _rand_domain(rng)

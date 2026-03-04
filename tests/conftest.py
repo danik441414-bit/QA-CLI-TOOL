@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Generator
 
 import pytest
 from selenium import webdriver
@@ -18,7 +18,7 @@ def pytest_addoption(parser):
 
 
 @pytest.fixture()
-def ctx(request) -> Dict[str, Any]:
+def ctx(request) -> Generator[Dict[str, Any], None, None]:
     scenario_id = request.config.getoption("--scenario-id")
     base_url = request.config.getoption("--base-url")
     mode = request.config.getoption("--mode")

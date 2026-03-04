@@ -7,10 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 
 class HerokuLoginPage:
-    """
-    the-internet.herokuapp.com login page:
-    /login -> username + password + Login button
-    """
+    
 
     PATH = "/login"
 

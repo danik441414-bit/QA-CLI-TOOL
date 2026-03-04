@@ -11,7 +11,7 @@ from qa_cli.sites.profiles import pick_profile
 
 
 def _is_non_bmp(s: str) -> bool:
-    # non-BMP: codepoint > 0xFFFF (обычно emoji)
+    
     return any(ord(ch) > 0xFFFF for ch in s)
 
 

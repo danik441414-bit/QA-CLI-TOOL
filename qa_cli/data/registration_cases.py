@@ -12,10 +12,7 @@ class RegisterCase:
     name: str
     email: str
     expect: str
-    # expect:
-    # - "html5_block": браузер должен блокнуть submit (validationMessage) ИЛИ сайт покажет ошибку
-    # - "exists": сайт показывает "Email Address already exist!"
-    # - "unsupported_ok": нестабильные кейсы — логируем, но не валим прогон
+    
 
 
 def _unique_email(rng: Random) -> str:
@@ -27,7 +24,7 @@ def _unique_email(rng: Random) -> str:
 def get_register_negative_cases(mode: str, seed: int) -> List[RegisterCase]:
     rng = Random(seed)
 
-    # ---------- SMOKE (быстро) ----------
+    
     smoke: List[RegisterCase] = [
         RegisterCase("empty_email", "User", "", "html5_block"),
         RegisterCase("spaces_email", "User", "   ", "html5_block"),
@@ -36,14 +33,14 @@ def get_register_negative_cases(mode: str, seed: int) -> List[RegisterCase]:
         RegisterCase("no_user", "User", "@example.com", "html5_block"),
         RegisterCase("double_at", "User", "a@@example.com", "html5_block"),
         RegisterCase("space_inside", "User", "u ser@example.com", "html5_block"),
-        # depends on real account existence on site => soft
+        
         RegisterCase("known_existing_email", "User", "test@example.com", "unsupported_ok"),
     ]
 
     if mode == "smoke":
         return smoke
 
-    # ---------- FULL (много) ----------
+    
     full: List[RegisterCase] = []
 
     invalid_emails = [
@@ -67,7 +64,7 @@ def get_register_negative_cases(mode: str, seed: int) -> List[RegisterCase]:
     for i, e in enumerate(invalid_emails, start=1):
         full.append(RegisterCase(f"invalid_email_{i:02d}", "User", e, "html5_block"))
 
-    # empty/weird names — сайт может принять, поэтому это soft
+    
     full.extend(
         [
             RegisterCase("empty_name", "", _unique_email(rng), "unsupported_ok"),
